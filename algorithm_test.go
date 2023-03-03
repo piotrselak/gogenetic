@@ -2,11 +2,11 @@ package gogenetic
 
 import "testing"
 
-func (gogenetic GoGenetic) Fitness(solution []bool) int64 {
+func (gogenetic GoGenetic) Fitness(solution Solution) int {
 	return 5
 }
 
-func (gogenetic GoGenetic) Compare(score int64, otherScore int64) int64 {
+func (gogenetic GoGenetic) Compare(score int, otherScore int) int {
 	return 5
 }
 
@@ -21,17 +21,42 @@ func TestGenetic(t *testing.T) {
 
 func TestSolutionGeneration(t *testing.T) {
 	gogenetic := GoGenetic{
-		Genome:          Genome{0, 1},
+		Gene:            Gene{0, 1},
 		Generations:     1,
 		SolutionsNumber: 4,
 		SolutionLength:  10,
 		CrossoverType:   OnePoint{},
 	}
 
-	gogenetic.randomSample()
-	solutions := gogenetic.solutions
+	solutions := gogenetic.randomSample()
 	if len(solutions) != 4 {
 		t.Errorf("randomSample does not generate samples.")
 	}
-	t.Log(solutions)
+}
+
+func TestRunningGoGenetic(t *testing.T) {
+	gogenetic := GoGenetic{
+		Gene:            Gene{0, 1},
+		Generations:     1,
+		SolutionsNumber: 4,
+		SolutionLength:  10,
+		CrossoverType:   OnePoint{},
+	}
+	gogenetic.Run()
+}
+
+func TestRankByFitness(t *testing.T) {
+	gogenetic := GoGenetic{
+		Gene:            Gene{0, 1},
+		Generations:     1,
+		SolutionsNumber: 4,
+		SolutionLength:  10,
+		CrossoverType:   OnePoint{},
+	}
+	solutions := gogenetic.randomSample()
+	scoreMap := rankByFitness(solutions, gogenetic.Fitness)
+	if len(scoreMap) != 4 {
+		t.Errorf("Could not rank by fitness.")
+	}
+	t.Log(scoreMap)
 }
