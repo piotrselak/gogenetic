@@ -30,6 +30,7 @@ func main() {
 		SolutionsNumber: 20,
 		SolutionLength:  len(numbers),
 		ParentsLeft:     10,
+		Mutation:        0.00001,
 		Crossover:       gogenetic.OnePoint{},
 		Fitness:         Fitness,
 	}

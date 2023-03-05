@@ -13,6 +13,7 @@ type GoGenetic struct {
 	SolutionLength  int
 	ParentsLeft     int
 	// Should be passed as 0 <= Mutation <= 1
+	// Really small numbers are encouraged
 	Mutation  float32
 	Crossover Crossover
 	Fitness   func(Solution) int
@@ -50,7 +51,10 @@ func (gogenetic *GoGenetic) Run() (Solution, error) {
 		samples = append(samples[0:gogenetic.ParentsLeft],
 			children[0:gogenetic.SolutionsNumber-gogenetic.ParentsLeft]...)
 
-		// THIS LINE IS DEBUG ONLY
+		for i := 0; i < len(samples); i++ {
+			samples[i].Mutate(gogenetic.Mutation, gogenetic.Gene)
+		}
+		// THIS LINE IS DEBUG ONLY SHOULD BE MOVED TO TEST
 		/*
 			if len(samples) != gogenetic.SolutionsNumber {
 				println(len(samples))
@@ -58,6 +62,7 @@ func (gogenetic *GoGenetic) Run() (Solution, error) {
 			}
 		*/
 	}
+
 	sort.SliceStable(samples, func(i, j int) bool {
 		return gogenetic.Fitness(samples[i]) > gogenetic.Fitness(samples[j]) //Change it to compare function
 	})
