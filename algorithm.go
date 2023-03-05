@@ -12,8 +12,10 @@ type GoGenetic struct {
 	SolutionsNumber int
 	SolutionLength  int
 	ParentsLeft     int
-	Crossover       Crossover
-	Fitness         func(Solution) int
+	// Should be passed as 0 <= Mutation <= 1
+	Mutation  float32
+	Crossover Crossover
+	Fitness   func(Solution) int
 }
 
 // Method running computing for given parameters.
@@ -24,13 +26,15 @@ func (gogenetic *GoGenetic) Run() (Solution, error) {
 	for i := 0; i < gogenetic.Generations; i++ {
 		ranked := rankByFitness(samples, gogenetic.Fitness)
 		sort.SliceStable(ranked, func(i, j int) bool {
-			return ranked[i].Score < ranked[j].Score
+			return ranked[i].Score < ranked[j].Score //Change it to compare function
 		})
+
 		pairs := makePairs(ranked)
 		chann := make(chan Solution, len(pairs)*2)
 		for _, pair := range pairs {
 			go gogenetic.Crossover.Exchange(chann, pair[0], pair[1])
 		}
+
 		var children []Solution
 		for i := 0; i < cap(chann); i++ {
 			val, ok := <-chann
@@ -39,11 +43,19 @@ func (gogenetic *GoGenetic) Run() (Solution, error) {
 			}
 		}
 		close(chann)
-		//for now lets leave children as sample
+
+		rankedChildren := rankByFitness(children, gogenetic.Fitness)
+		sort.SliceStable(ranked, func(i, j int) bool {
+			return ranked[i].Score < ranked[j].Score //Change it to compare function
+		})
+
 		samples = children
 	}
-	// take best child in the future
-	return samples[0], nil
+	ranked := rankByFitness(samples, gogenetic.Fitness)
+	sort.SliceStable(ranked, func(i, j int) bool {
+		return ranked[i].Score > ranked[j].Score //Change it to compare function
+	})
+	return ranked[0].Value, nil
 }
 
 // Method generating random sample of gens used to create first generation of solutions.

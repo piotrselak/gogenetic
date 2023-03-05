@@ -4,3 +4,8 @@ package gogenetic
 type Solution struct {
 	Genes []int
 }
+
+type FitnessScore struct {
+	Score int
+	Value Solution
+}

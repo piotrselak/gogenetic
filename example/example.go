@@ -27,7 +27,7 @@ func main() {
 	genetics := gogenetic.GoGenetic{
 		Gene:            []int{0, 1},
 		Generations:     30,
-		SolutionsNumber: 10,
+		SolutionsNumber: 20,
 		SolutionLength:  len(numbers),
 		ParentsLeft:     0,
 		Crossover:       gogenetic.OnePoint{},
