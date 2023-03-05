@@ -33,23 +33,6 @@ func TestRunningGoGenetic(t *testing.T) {
 	gogenetic.Run()
 }
 
-func TestRankByFitness(t *testing.T) {
-	gogenetic := GoGenetic{
-		Gene:            Gene{0, 1},
-		Generations:     1,
-		SolutionsNumber: 4,
-		SolutionLength:  10,
-		Crossover:       OnePoint{},
-		Fitness:         Fitness,
-	}
-	solutions := gogenetic.randomSample()
-	scoreMap := rankByFitness(solutions, gogenetic.Fitness)
-	if len(scoreMap) != 4 {
-		t.Errorf("Could not rank by fitness.")
-	}
-	t.Log(scoreMap)
-}
-
 func TestMakePairs(t *testing.T) {
 	gogenetic := GoGenetic{
 		Gene:            Gene{0, 1},
@@ -60,10 +43,9 @@ func TestMakePairs(t *testing.T) {
 		Fitness:         Fitness,
 	}
 	solutions := gogenetic.randomSample()
-	scoreMap := rankByFitness(solutions, gogenetic.Fitness)
-	pairs := makePairs(scoreMap)
+	pairs := makePairs(solutions)
 	t.Log(pairs)
-	if len(pairs) != len(scoreMap)/2 {
+	if len(pairs) != len(solutions)/2 {
 		t.Errorf("There is no right ammount of pairs")
 	}
 }

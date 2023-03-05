@@ -24,12 +24,11 @@ func (gogenetic *GoGenetic) Run() (Solution, error) {
 
 	samples := gogenetic.randomSample()
 	for i := 0; i < gogenetic.Generations; i++ {
-		ranked := rankByFitness(samples, gogenetic.Fitness)
-		sort.SliceStable(ranked, func(i, j int) bool {
-			return ranked[i].Score < ranked[j].Score //Change it to compare function
+		sort.SliceStable(samples, func(i, j int) bool {
+			return gogenetic.Fitness(samples[i]) > gogenetic.Fitness(samples[j]) //Change it to compare function
 		})
 
-		pairs := makePairs(ranked)
+		pairs := makePairs(samples)
 		chann := make(chan Solution, len(pairs)*2)
 		for _, pair := range pairs {
 			go gogenetic.Crossover.Exchange(chann, pair[0], pair[1])
@@ -44,18 +43,25 @@ func (gogenetic *GoGenetic) Run() (Solution, error) {
 		}
 		close(chann)
 
-		rankedChildren := rankByFitness(children, gogenetic.Fitness)
-		sort.SliceStable(ranked, func(i, j int) bool {
-			return ranked[i].Score < ranked[j].Score //Change it to compare function
+		sort.SliceStable(children, func(i, j int) bool {
+			return gogenetic.Fitness(samples[i]) > gogenetic.Fitness(samples[j]) //Change it to compare function
 		})
 
-		samples = children
+		samples = append(samples[0:gogenetic.ParentsLeft],
+			children[0:gogenetic.SolutionsNumber-gogenetic.ParentsLeft]...)
+
+		// THIS LINE IS DEBUG ONLY
+		/*
+			if len(samples) != gogenetic.SolutionsNumber {
+				println(len(samples))
+				panic("wrong indexes")
+			}
+		*/
 	}
-	ranked := rankByFitness(samples, gogenetic.Fitness)
-	sort.SliceStable(ranked, func(i, j int) bool {
-		return ranked[i].Score > ranked[j].Score //Change it to compare function
+	sort.SliceStable(samples, func(i, j int) bool {
+		return gogenetic.Fitness(samples[i]) > gogenetic.Fitness(samples[j]) //Change it to compare function
 	})
-	return ranked[0].Value, nil
+	return samples[0], nil
 }
 
 // Method generating random sample of gens used to create first generation of solutions.
@@ -72,19 +78,7 @@ func (gogenetic GoGenetic) randomSample() []Solution {
 	return solutions
 }
 
-func rankByFitness(samples []Solution, f func(Solution) int) []FitnessScore {
-	var scoreArr []FitnessScore
-	for _, sample := range samples {
-		score := f(sample)
-		scoreArr = append(scoreArr, FitnessScore{
-			Score: score,
-			Value: sample,
-		})
-	}
-	return scoreArr
-}
-
-func makePairs(arr []FitnessScore) [][]Solution {
+func makePairs(arr []Solution) [][]Solution {
 	var paired [][]Solution
 	numberOfPairs := len(arr) / 2 // ignores last element, maybe change later
 	for i := 0; i < numberOfPairs; i++ {
@@ -92,7 +86,7 @@ func makePairs(arr []FitnessScore) [][]Solution {
 	}
 	pairCounter := 0
 	for i, el := range arr {
-		paired[pairCounter] = append(paired[pairCounter], el.Value)
+		paired[pairCounter] = append(paired[pairCounter], el)
 		if i%2 == 1 {
 			pairCounter += 1
 		}

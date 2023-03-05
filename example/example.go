@@ -29,7 +29,7 @@ func main() {
 		Generations:     30,
 		SolutionsNumber: 20,
 		SolutionLength:  len(numbers),
-		ParentsLeft:     0,
+		ParentsLeft:     10,
 		Crossover:       gogenetic.OnePoint{},
 		Fitness:         Fitness,
 	}
