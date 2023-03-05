@@ -1,44 +1,49 @@
 package gogenetic
 
 import (
-	"errors"
-	"fmt"
 	"math/rand"
+	"sort"
 )
 
-// GeneticAlgorithm is an interface which has to be implemented for GoGeneric struct
-// as these methods' implementation depends on the algorithm
-type GeneticAlgorithm interface {
-	Fitness(solution Solution) int
-	Compare(score int, otherScore int) int
-}
-
 // GoGenetic contains all the variables and information needed for computations.
-// All methods from GeneticAlgorithm interface must be implemented in order to
-// work as intended.
 type GoGenetic struct {
 	Gene            Gene
 	Generations     int
 	SolutionsNumber int
 	SolutionLength  int
-	CrossoverType   Crossover
+	ParentsLeft     int
+	Crossover       Crossover
+	Fitness         func(Solution) int
 }
 
 // Method running computing for given parameters.
 // Returns best found solution or error.
 func (gogenetic *GoGenetic) Run() (Solution, error) {
-	var algorithmForCheck interface{} = gogenetic
-	_, ok := algorithmForCheck.(GeneticAlgorithm)
-
-	if ok == false {
-		return Solution{}, errors.New("Given GoGenetic struct does not implement GeneticAlgorithm interface.")
-	}
 
 	samples := gogenetic.randomSample()
 	for i := 0; i < gogenetic.Generations; i++ {
-		fmt.Println(samples)
+		ranked := rankByFitness(samples, gogenetic.Fitness)
+		sort.SliceStable(ranked, func(i, j int) bool {
+			return ranked[i].Score < ranked[j].Score
+		})
+		pairs := makePairs(ranked)
+		chann := make(chan Solution, len(pairs)*2)
+		for _, pair := range pairs {
+			go gogenetic.Crossover.Exchange(chann, pair[0], pair[1])
+		}
+		var children []Solution
+		for i := 0; i < cap(chann); i++ {
+			val, ok := <-chann
+			if ok {
+				children = append(children, val)
+			}
+		}
+		close(chann)
+		//for now lets leave children as sample
+		samples = children
 	}
-	return Solution{}, nil
+	// take best child in the future
+	return samples[0], nil
 }
 
 // Method generating random sample of gens used to create first generation of solutions.
@@ -65,4 +70,20 @@ func rankByFitness(samples []Solution, f func(Solution) int) []FitnessScore {
 		})
 	}
 	return scoreArr
+}
+
+func makePairs(arr []FitnessScore) [][]Solution {
+	var paired [][]Solution
+	numberOfPairs := len(arr) / 2 // ignores last element, maybe change later
+	for i := 0; i < numberOfPairs; i++ {
+		paired = append(paired, []Solution{})
+	}
+	pairCounter := 0
+	for i, el := range arr {
+		paired[pairCounter] = append(paired[pairCounter], el.Value)
+		if i%2 == 1 {
+			pairCounter += 1
+		}
+	}
+	return paired
 }

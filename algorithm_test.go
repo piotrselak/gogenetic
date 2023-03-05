@@ -2,21 +2,8 @@ package gogenetic
 
 import "testing"
 
-func (gogenetic GoGenetic) Fitness(solution Solution) int {
+func Fitness(solution Solution) int {
 	return 5
-}
-
-func (gogenetic GoGenetic) Compare(score int, otherScore int) int {
-	return 5
-}
-
-func TestGenetic(t *testing.T) {
-	gogenetic := GoGenetic{}
-	var test_probe interface{} = gogenetic
-	_, ok := test_probe.(GeneticAlgorithm)
-	if ok != true {
-		t.Errorf("GoGenetic does not implement GeneticAlgorithmTrait")
-	}
 }
 
 func TestSolutionGeneration(t *testing.T) {
@@ -25,7 +12,7 @@ func TestSolutionGeneration(t *testing.T) {
 		Generations:     1,
 		SolutionsNumber: 4,
 		SolutionLength:  10,
-		CrossoverType:   OnePoint{},
+		Crossover:       OnePoint{},
 	}
 
 	solutions := gogenetic.randomSample()
@@ -40,7 +27,8 @@ func TestRunningGoGenetic(t *testing.T) {
 		Generations:     1,
 		SolutionsNumber: 4,
 		SolutionLength:  10,
-		CrossoverType:   OnePoint{},
+		Crossover:       OnePoint{},
+		Fitness:         Fitness,
 	}
 	gogenetic.Run()
 }
@@ -51,7 +39,8 @@ func TestRankByFitness(t *testing.T) {
 		Generations:     1,
 		SolutionsNumber: 4,
 		SolutionLength:  10,
-		CrossoverType:   OnePoint{},
+		Crossover:       OnePoint{},
+		Fitness:         Fitness,
 	}
 	solutions := gogenetic.randomSample()
 	scoreMap := rankByFitness(solutions, gogenetic.Fitness)
@@ -59,4 +48,22 @@ func TestRankByFitness(t *testing.T) {
 		t.Errorf("Could not rank by fitness.")
 	}
 	t.Log(scoreMap)
+}
+
+func TestMakePairs(t *testing.T) {
+	gogenetic := GoGenetic{
+		Gene:            Gene{0, 1},
+		Generations:     1,
+		SolutionsNumber: 4,
+		SolutionLength:  10,
+		Crossover:       OnePoint{},
+		Fitness:         Fitness,
+	}
+	solutions := gogenetic.randomSample()
+	scoreMap := rankByFitness(solutions, gogenetic.Fitness)
+	pairs := makePairs(scoreMap)
+	t.Log(pairs)
+	if len(pairs) != len(scoreMap)/2 {
+		t.Errorf("There is no right ammount of pairs")
+	}
 }
