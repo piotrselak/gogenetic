@@ -12,6 +12,7 @@ type GoGenetic struct {
 	SolutionsNumber int
 	SolutionLength  int
 	ParentsLeft     int
+	StopAt          int
 	// Should be passed as 0 <= Mutation <= 1
 	// Really small numbers are encouraged
 	Mutation  float32
@@ -28,6 +29,10 @@ func (gogenetic *GoGenetic) Run() (Solution, error) {
 		sort.SliceStable(samples, func(i, j int) bool {
 			return gogenetic.Fitness(samples[i]) > gogenetic.Fitness(samples[j]) //Change it to compare function
 		})
+
+		if gogenetic.Fitness(samples[0]) >= gogenetic.StopAt {
+			return samples[0], nil
+		}
 
 		pairs := makePairs(samples)
 		chann := make(chan Solution, len(pairs)*2)
