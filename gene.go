@@ -1,3 +1,3 @@
 package gogenetic
 
-type Gene = []int
+type Gene []int

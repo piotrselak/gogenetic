@@ -34,7 +34,7 @@ func main() {
 		Crossover:       gogenetic.OnePoint{},
 		Fitness:         Fitness,
 	}
-	solution, _ := genetics.Run()
+	solution := genetics.Run()
 
 	result := Fitness(solution)
 	fmt.Println(solution)

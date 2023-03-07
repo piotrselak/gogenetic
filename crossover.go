@@ -9,7 +9,7 @@ type Crossover interface {
 
 type OnePoint struct{}
 
-// Method doing a crossover exchange in the middle of the solution (for now).
+// Starting point for crossover is being randomised.
 func (c OnePoint) Exchange(channel chan Solution, s1 Solution, s2 Solution) {
 	startPoint := rand.Intn(len(s1.Genes))
 	for i := startPoint; i < len(s1.Genes); i++ {
@@ -17,4 +17,10 @@ func (c OnePoint) Exchange(channel chan Solution, s1 Solution, s2 Solution) {
 	}
 	channel <- s1
 	channel <- s2
+}
+
+type Random struct{}
+
+func (c Random) Exchange(channel chan Solution, s1, s2 Solution) {
+
 }

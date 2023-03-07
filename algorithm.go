@@ -22,7 +22,7 @@ type GoGenetic struct {
 
 // Method running computing for given parameters.
 // Returns best found solution or error.
-func (gogenetic *GoGenetic) Run() (Solution, error) {
+func (gogenetic *GoGenetic) Run() Solution {
 
 	samples := gogenetic.randomSample()
 	for i := 0; i < gogenetic.Generations; i++ {
@@ -31,7 +31,7 @@ func (gogenetic *GoGenetic) Run() (Solution, error) {
 		})
 
 		if gogenetic.Fitness(samples[0]) >= gogenetic.StopAt {
-			return samples[0], nil
+			return samples[0]
 		}
 
 		pairs := makePairs(samples)
@@ -71,7 +71,7 @@ func (gogenetic *GoGenetic) Run() (Solution, error) {
 	sort.SliceStable(samples, func(i, j int) bool {
 		return gogenetic.Fitness(samples[i]) > gogenetic.Fitness(samples[j]) //Change it to compare function
 	})
-	return samples[0], nil
+	return samples[0]
 }
 
 // Method generating random sample of gens used to create first generation of solutions.
