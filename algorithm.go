@@ -7,17 +7,17 @@ import (
 
 // GoGenetic contains all the variables and information needed for computations.
 type GoGenetic struct {
-	Gene            Gene
-	Generations     int
-	SolutionsNumber int
-	SolutionLength  int
-	ParentsLeft     int
-	StopAt          int
+	gene            Gene
+	generations     int
+	solutionsNumber int
+	solutionLength  int
+	parentsLeft     int
+	stopAt          int
 	// Should be passed as 0 <= Mutation <= 1
 	// Really small numbers are encouraged
-	Mutation  float32
-	Crossover Crossover
-	Fitness   func(Solution) int
+	mutation  float32
+	crossover Crossover
+	fitness   func(Solution) int
 }
 
 // Method for creating GoGenetic object
@@ -31,15 +31,15 @@ func NewGoGenetic(gene Gene,
 	crossover Crossover,
 	fitness func(Solution) int) GoGenetic {
 	return GoGenetic{
-		Gene:            gene,
-		Generations:     generations,
-		SolutionsNumber: solutionsNumber,
-		SolutionLength:  solutionLength,
-		ParentsLeft:     parentsLeft,
-		StopAt:          stopAt,
-		Mutation:        mutation,
-		Crossover:       crossover,
-		Fitness:         fitness,
+		gene:            gene,
+		generations:     generations,
+		solutionsNumber: solutionsNumber,
+		solutionLength:  solutionLength,
+		parentsLeft:     parentsLeft,
+		stopAt:          stopAt,
+		mutation:        mutation,
+		crossover:       crossover,
+		fitness:         fitness,
 	}
 }
 
