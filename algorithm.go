@@ -48,19 +48,19 @@ func NewGoGenetic(gene Gene,
 func (gogenetic *GoGenetic) Run() Solution {
 
 	samples := gogenetic.randomSample()
-	for i := 0; i < gogenetic.Generations; i++ {
+	for i := 0; i < gogenetic.generations; i++ {
 		sort.SliceStable(samples, func(i, j int) bool {
-			return gogenetic.Fitness(samples[i]) > gogenetic.Fitness(samples[j]) //Change it to compare function
+			return gogenetic.fitness(samples[i]) > gogenetic.fitness(samples[j]) //Change it to compare function
 		})
 
-		if gogenetic.Fitness(samples[0]) >= gogenetic.StopAt {
+		if gogenetic.fitness(samples[0]) >= gogenetic.stopAt {
 			return samples[0]
 		}
 
 		pairs := makePairs(samples)
 		chann := make(chan Solution, len(pairs)*2)
 		for _, pair := range pairs {
-			go gogenetic.Crossover.Exchange(chann, pair[0], pair[1])
+			go gogenetic.crossover.Exchange(chann, pair[0], pair[1])
 		}
 
 		var children []Solution
@@ -73,14 +73,14 @@ func (gogenetic *GoGenetic) Run() Solution {
 		close(chann)
 
 		sort.SliceStable(children, func(i, j int) bool {
-			return gogenetic.Fitness(samples[i]) > gogenetic.Fitness(samples[j]) //Change it to compare function
+			return gogenetic.fitness(samples[i]) > gogenetic.fitness(samples[j]) //Change it to compare function
 		})
 
-		samples = append(samples[0:gogenetic.ParentsLeft],
-			children[0:gogenetic.SolutionsNumber-gogenetic.ParentsLeft]...)
+		samples = append(samples[0:gogenetic.parentsLeft],
+			children[0:gogenetic.solutionsNumber-gogenetic.parentsLeft]...)
 
 		for i := 0; i < len(samples); i++ {
-			samples[i].Mutate(gogenetic.Mutation, gogenetic.Gene)
+			samples[i].Mutate(gogenetic.mutation, gogenetic.gene)
 		}
 		// THIS LINE IS DEBUG ONLY SHOULD BE MOVED TO TEST
 		/*
@@ -92,7 +92,7 @@ func (gogenetic *GoGenetic) Run() Solution {
 	}
 
 	sort.SliceStable(samples, func(i, j int) bool {
-		return gogenetic.Fitness(samples[i]) > gogenetic.Fitness(samples[j]) //Change it to compare function
+		return gogenetic.fitness(samples[i]) > gogenetic.fitness(samples[j]) //Change it to compare function
 	})
 	return samples[0]
 }
@@ -100,11 +100,11 @@ func (gogenetic *GoGenetic) Run() Solution {
 // Method generating random sample of gens used to create first generation of solutions.
 func (gogenetic GoGenetic) randomSample() []Solution {
 	var solutions []Solution
-	for i := 0; i < gogenetic.SolutionsNumber; i++ {
+	for i := 0; i < gogenetic.solutionsNumber; i++ {
 		solution := Solution{}
-		for i := 0; i < gogenetic.SolutionLength; i++ {
-			randomIndex := rand.Intn(len(gogenetic.Gene))
-			solution = Solution{Genes: append(solution.Genes, gogenetic.Gene[randomIndex])}
+		for i := 0; i < gogenetic.solutionLength; i++ {
+			randomIndex := rand.Intn(len(gogenetic.gene))
+			solution = Solution{Genes: append(solution.Genes, gogenetic.gene[randomIndex])}
 		}
 		solutions = append(solutions, solution)
 	}

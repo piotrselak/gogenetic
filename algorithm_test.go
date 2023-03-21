@@ -7,13 +7,17 @@ func Fitness(solution Solution) int {
 }
 
 func TestSolutionGeneration(t *testing.T) {
-	gogenetic := GoGenetic{
-		Gene:            Gene{0, 1},
-		Generations:     1,
-		SolutionsNumber: 4,
-		SolutionLength:  10,
-		Crossover:       OnePoint{},
-	}
+	gogenetic := NewGoGenetic(
+		Gene{0, 1},
+		1,
+		4,
+		10,
+		1,
+		1,
+		0.001,
+		OnePoint{},
+		Fitness,
+	)
 
 	solutions := gogenetic.randomSample()
 	if len(solutions) != 4 {
@@ -22,26 +26,32 @@ func TestSolutionGeneration(t *testing.T) {
 }
 
 func TestRunningGoGenetic(t *testing.T) {
-	gogenetic := GoGenetic{
-		Gene:            Gene{0, 1},
-		Generations:     1,
-		SolutionsNumber: 4,
-		SolutionLength:  10,
-		Crossover:       OnePoint{},
-		Fitness:         Fitness,
-	}
+	gogenetic := NewGoGenetic(
+		Gene{0, 1},
+		1,
+		4,
+		10,
+		1,
+		1,
+		0.001,
+		OnePoint{},
+		Fitness,
+	)
 	gogenetic.Run()
 }
 
 func TestMakePairs(t *testing.T) {
-	gogenetic := GoGenetic{
-		Gene:            Gene{0, 1},
-		Generations:     1,
-		SolutionsNumber: 4,
-		SolutionLength:  10,
-		Crossover:       OnePoint{},
-		Fitness:         Fitness,
-	}
+	gogenetic := NewGoGenetic(
+		Gene{0, 1},
+		1,
+		4,
+		10,
+		1,
+		1,
+		0.001,
+		OnePoint{},
+		Fitness,
+	)
 	solutions := gogenetic.randomSample()
 	pairs := makePairs(solutions)
 	t.Log(pairs)

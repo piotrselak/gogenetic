@@ -24,16 +24,17 @@ func Fitness(solution gogenetic.Solution) int {
 }
 
 func main() {
-	genetics := gogenetic.GoGenetic{
-		Gene:            []int{0, 1},
-		Generations:     15,
-		SolutionsNumber: 50,
-		SolutionLength:  len(numbers),
-		ParentsLeft:     3,
-		Mutation:        0.00001,
-		Crossover:       gogenetic.OnePoint{},
-		Fitness:         Fitness,
-	}
+	genetics := gogenetic.NewGoGenetic(
+		[]int{0, 1},
+		15,
+		50,
+		len(numbers),
+		3,
+		0,
+		0.00001,
+		gogenetic.OnePoint{},
+		Fitness,
+	)
 	solution := genetics.Run()
 
 	result := Fitness(solution)
