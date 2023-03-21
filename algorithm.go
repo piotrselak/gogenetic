@@ -20,6 +20,29 @@ type GoGenetic struct {
 	Fitness   func(Solution) int
 }
 
+// Method for creating GoGenetic object
+func NewGoGenetic(gene Gene,
+	generations int,
+	solutionsNumber int,
+	solutionLength int,
+	parentsLeft int,
+	stopAt int,
+	mutation float32,
+	crossover Crossover,
+	fitness func(Solution) int) GoGenetic {
+	return GoGenetic{
+		Gene:            gene,
+		Generations:     generations,
+		SolutionsNumber: solutionsNumber,
+		SolutionLength:  solutionLength,
+		ParentsLeft:     parentsLeft,
+		StopAt:          stopAt,
+		Mutation:        mutation,
+		Crossover:       crossover,
+		Fitness:         fitness,
+	}
+}
+
 // Method running computing for given parameters.
 // Returns best found solution or error.
 func (gogenetic *GoGenetic) Run() Solution {

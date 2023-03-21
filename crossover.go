@@ -19,8 +19,10 @@ func (c OnePoint) Exchange(channel chan Solution, s1 Solution, s2 Solution) {
 	channel <- s2
 }
 
-type Random struct{}
+type KPoint struct {
+	K int
+}
 
-func (c Random) Exchange(channel chan Solution, s1, s2 Solution) {
+func (c KPoint) Exchange(channel chan Solution, s1, s2 Solution) {
 
 }
